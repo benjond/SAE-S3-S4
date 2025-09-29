@@ -1,0 +1,20 @@
+[
+    {
+        "id" : 1,
+        "lat": 47.64270896559315,
+        "lng": 6.839553393926968,
+        "popupText": "BUT INFORMATIQUE"
+    },
+    {
+        "id"  : 2,
+        "lat" : 47.82075611389578,
+        "lng" : 6.837159308611937,
+        "popupText" : "<strong>Fête Ballon d'Alsace</strong>"
+    },
+    {
+        "id"  : 3,
+        "lat" : 47.4341804723574,
+        "lng" : 6.806973853325693,
+        "popupText" : "Pays de Montbéliard et Vosges"
+    }
+]

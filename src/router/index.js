@@ -6,6 +6,11 @@ const routes = [
         path: '/',
         name: 'Introduction',
         component: () => import('@/views/Home.vue')
+    },
+    {
+      path : '/map',
+      name : 'Map Interactif',
+      component : () => import('@/views/Map.vue')
     }
 ]
 
