@@ -15,16 +15,15 @@ export const useMapStore = defineStore('map', () => {
      * Main Application of the map nedeed
      * to initialize the application
      */
-    async function mapInit(map) {
-        console.log("Starting map..");
+    async function mapInit(mapInstance) {
         // Ensure map is a ref and initialize if undefined
-        if (!map || typeof map.value === 'undefined') {
-            map = ref(null);
+            if (!mapInstance || typeof mapInstance.value === 'undefined') {
+            mapInstance = ref(null);
         }
-        if (map.value) {
-            map.value.remove();
+        if (mapInstance.value) {
+            mapInstance.value.remove();
         }
-        map.value = leaflet.map('map', {
+        mapInstance.value = leaflet.map('map', {
             maxBounds: [
                 [41.303, -5.142], // Sud de la France
                 [51.124, 9.560]   // Nord de la France
@@ -35,23 +34,26 @@ export const useMapStore = defineStore('map', () => {
         leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(map.value);
+        }).addTo(mapInstance.value);
     }
 
     /**
      * Add a marker to the global map
+     * @param {*} mapInstance 
      * @param {*} lat 
      * @param {*} lng 
      * @param {*} popupText 
      * @returns 
      */
     async function addMarkerStore(mapInstance, lat, lng, popupText){
-        if (!mapInstance || !mapInstance.value) {
-            console.warn('Map is not initialized');
-            return;
+        if (!mapInstance || !mapInstance.value ) {
+            throw new Error('Map is not initialized');
+        } else if (lat === undefined || lat === null || lng === undefined || lng === null) {
+            throw new SyntaxError("No lat nor lng value");
         }
         console.log('Adding a marker :\nLAT : '+lat+"\nLNG : "+lng);
-        const result = markerService.addMarker(mapInstance.value, lat, lng, popupText);
+        let result;
+        result = await markerService.addMarker(mapInstance.value, lat, lng, popupText);
         if(result !== null){
             AllMarker.value.push(result);
             return result;
@@ -60,11 +62,29 @@ export const useMapStore = defineStore('map', () => {
     }
 
     async function addMarkerFromJSONStore(mapInstance, jsonData) {
-        if (!mapInstance.value) {
-            console.warn('Map is not initialized');
-            return;
+        if (mapInstance === undefined || mapInstance === null || mapInstance.value === undefined || mapInstance.value === null ) {
+            throw new Error('Map is not initialized');
+        } else if ( jsonData === undefined || jsonData === null ) {
+            throw new Error('No JSON data');
+        } else if (typeof jsonData === 'string') {
+            try {
+                jsonData = JSON.parse(jsonData);
+            } catch (e) {
+                throw new SyntaxError('Invalid JSON string');
+            }
         }
-        markerService.addMarkerFromJSON(mapInstance.value , jsonData , AllMarker.value);
+        
+        const markersArray = Array.isArray(jsonData) ? jsonData : [jsonData];
+        markersArray.forEach(marker => {
+            if (marker.lat === undefined || marker.lat === null){
+                throw new SyntaxError("No lat value in marker JSON data");
+            } else if(  marker.lng === undefined || marker.lng === null) {
+                throw new SyntaxError("No lng value in marker JSON data");
+            }
+        });
+
+        await markerService.addMarkerFromJSON(mapInstance.value, jsonData, AllMarker.value);
+
         AllMarker.value.forEach(marker => {
             marker.on('click', () => {
                 marker.openPopup();
@@ -73,4 +93,4 @@ export const useMapStore = defineStore('map', () => {
     }
 
     return { AllMarker, mapInit , addMarkerStore, addMarkerFromJSONStore};
-})
+})  

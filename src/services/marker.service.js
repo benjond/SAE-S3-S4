@@ -10,7 +10,6 @@ import * as leaflet from 'leaflet'
  * @returns a marker added to the map.
  */
 function addMarker(mapInstance, lat, lng, popupText){
-    // Creation of the Icon of the marker
     let Icon = leaflet.icon({
         iconUrl : 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
         shadowUrl : 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
@@ -38,14 +37,7 @@ function addMarker(mapInstance, lat, lng, popupText){
  * @param {*} markerTotalArray 
  */
 function addMarkerFromJSON(mapInstance, markerJSONArray, markerTotalArray){
-    if(!(mapInstance instanceof leaflet.Map)) {
-        console.error("mapInstance doit être une instante de leaflet.Map.");
-        return;
-    }
-    if(markerJSONArray == null || markerTotalArray == null) return;
-    if(!Array.isArray(markerJSONArray)) return;
-    if(!Array.isArray(markerTotalArray)) return;
-    markerJSONArray.forEach( item => {
+        markerJSONArray.forEach( item => {
         if( item.lat && item.lng) {
             console.log("ID : "+item.id+"\nLAT : "+item.lat+"\nLNG : "+item.lng+"\nPOPUPTEXT : "+item.popupText);
             const marker = addMarker(mapInstance , item.lat, item.lng, item.popupText);
