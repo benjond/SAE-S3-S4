@@ -1,18 +1,17 @@
-import MarkerSource from '@/datasource/marker.json';
 import * as leaflet from 'leaflet'
 
 /**
- * Create a marker from a mapInstante with his latitude,
+ * Create a marker from a Leaflet map instance with its latitude,
  * longitude and a popup text
- * @param {*} mapInstance 
+ * @param {leaflet.Map} mapInstance - Leaflet map instance
  * @param {*} lat 
  * @param {*} lng 
  * @param {*} popupText 
- * @returns a marker added to the maps.
+ * @returns a marker added to the map.
  */
 function addMarker(mapInstance, lat, lng, popupText){
     // Creation of the Icon of the marker
-    const Icon = leaflet.icon({
+    let Icon = leaflet.icon({
         iconUrl : 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
         shadowUrl : 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
         iconSize: [25, 41],
@@ -21,7 +20,10 @@ function addMarker(mapInstance, lat, lng, popupText){
         shadowSize: [41, 41]
     });
 
-    const marker = leaflet.marker([lat,lng], { icon : Icon }).addTo(mapInstance);
+    const marker = leaflet.marker(
+        [parseFloat(lat),parseFloat(lng)],
+        { icon: Icon }
+    ).addTo(mapInstance);
     if(popupText) {
         marker.bindPopup(popupText);
     }
@@ -31,19 +33,29 @@ function addMarker(mapInstance, lat, lng, popupText){
 /**
  * Adding all the markers stored in a JSON file
  * into an array of all the markers
- * @param {*} mapInstance 
+ * @param {leaflet.Map} mapInstance 
  * @param {*} markerJSONArray 
  * @param {*} markerTotalArray 
  */
 function addMarkerFromJSON(mapInstance, markerJSONArray, markerTotalArray){
-    if(mapInstance == null || markerJSONArray == null || markerTotalArray == null) return;
+    if(!(mapInstance instanceof leaflet.Map)) {
+        console.error("mapInstance doit être une instante de leaflet.Map.");
+        return;
+    }
+    if(markerJSONArray == null || markerTotalArray == null) return;
     if(!Array.isArray(markerJSONArray)) return;
     if(!Array.isArray(markerTotalArray)) return;
     markerJSONArray.forEach( item => {
         if( item.lat && item.lng) {
+            console.log("ID : "+item.id+"\nLAT : "+item.lat+"\nLNG : "+item.lng+"\nPOPUPTEXT : "+item.popupText);
             const marker = addMarker(mapInstance , item.lat, item.lng, item.popupText);
             markerTotalArray.push(marker);
             marker.on('click',() => marker.openPopup());
         }
     });
+}
+
+export default {
+    addMarker,
+    addMarkerFromJSON
 }
