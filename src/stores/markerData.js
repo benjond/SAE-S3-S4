@@ -38,12 +38,12 @@ export const useMapStore = defineStore('map', () => {
     }
 
     /**
-     * Add a marker to the global map
+     * Add a marker to the map instance given in arguments
      * @param {*} mapInstance 
      * @param {*} lat 
      * @param {*} lng 
      * @param {*} popupText 
-     * @returns 
+     * @returns result
      */
     async function addMarkerStore(mapInstance, lat, lng, popupText){
         if (!mapInstance || !mapInstance.value ) {
@@ -61,6 +61,12 @@ export const useMapStore = defineStore('map', () => {
         return result;
     }
 
+    /**
+     * Add the individual markers and chekc the synthax
+     * from the JSON data given in argument.
+     * @param {*} mapInstance 
+     * @param {*} jsonData 
+     */
     async function addMarkerFromJSONStore(mapInstance, jsonData) {
         if (mapInstance === undefined || mapInstance === null || mapInstance.value === undefined || mapInstance.value === null ) {
             throw new Error('Map is not initialized');
